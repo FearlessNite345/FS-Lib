@@ -196,7 +196,7 @@ local function ControlPlacement(previewModel, callback)
 
                 -- Call the callback function with true
                 if callback then
-                    callback(true)
+                    callback(true, previewModel)
                 end
 
                 -- Cleanup
