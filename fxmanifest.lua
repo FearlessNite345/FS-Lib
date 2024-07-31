@@ -9,5 +9,5 @@ server_scripts {
 }
 
 shared_scripts {
-    'shared/*.lua'
+    'exports/*.lua'
 }

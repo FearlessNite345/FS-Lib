@@ -39,7 +39,10 @@ exports('DrawText2D', function(x, y, text, scale, center)
     DrawText2D(x, y, text, scale, center)
 end)
 
-exports('PlaceModel', function(model, position, rotation)
-    PlaceModel(model, position, rotation)
+exports('PlaceModel', function(model, position, rotation, callback)
+    PlaceModel(model, position, rotation, callback)
 end)
 
+exports('HeadingToCardinal', function(heading)
+    return HeadingToCardinal()
+end)

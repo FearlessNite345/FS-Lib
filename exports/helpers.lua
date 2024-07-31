@@ -157,8 +157,8 @@ local function UpdateModelPosition(previewModel, position, rotation)
 end
 
 local function ControlPlacement(previewModel, callback)
-    local moveSpeed = 1.0
-    local verticalSpeed = 1.0
+    local moveSpeed = 0.01
+    local verticalSpeed = 0.01
 
     Citizen.CreateThread(function()
         local currentPos = GetEntityCoords(previewModel, false)
@@ -168,21 +168,25 @@ local function ControlPlacement(previewModel, callback)
             Citizen.Wait(0)
 
             -- Movement controls
-            if IsControlPressed(0, 172) then     -- Arrow Up
-                currentPos.y += moveSpeed
-            elseif IsControlPressed(0, 173) then -- Arrow Down
-                currentPos.y -= moveSpeed
-            elseif IsControlPressed(0, 174) then -- Arrow Left
-                currentPos.x -= moveSpeed
-            elseif IsControlPressed(0, 175) then -- Arrow Right
-                currentPos.x += moveSpeed
+            if IsControlPressed(0, 172) then -- Arrow Up
+                currentPos = vector3(currentPos.x, currentPos.y + moveSpeed, currentPos.z)
+            end
+            if IsControlPressed(0, 173) then -- Arrow Down
+                currentPos = vector3(currentPos.x, currentPos.y - moveSpeed, currentPos.z)
+            end
+            if IsControlPressed(0, 174) then -- Arrow Left
+                currentPos = vector3(currentPos.x - moveSpeed, currentPos.y, currentPos.z)
+            end
+            if IsControlPressed(0, 175) then -- Arrow Right
+                currentPos = vector3(currentPos.x + moveSpeed, currentPos.y, currentPos.z)
             end
 
             -- Vertical movement
-            if IsControlPressed(0, 44) then     -- Page Up
-                currentPos.z += verticalSpeed
-            elseif IsControlPressed(0, 36) then -- Page Down
-                currentPos.z -= verticalSpeed
+            if IsControlPressed(0, 10) then -- Page Up
+                currentPos = vector3(currentPos.x, currentPos.y, currentPos.z + verticalSpeed)
+            end
+            if IsControlPressed(0, 11) then -- Page Down
+                currentPos = vector3(currentPos.x, currentPos.y, currentPos.z - verticalSpeed)
             end
 
             -- Update model position
@@ -193,6 +197,7 @@ local function ControlPlacement(previewModel, callback)
                 -- Finalize the model: make the preview model visible and enable collision
                 SetEntityAlpha(previewModel, 255, false)     -- Make the model visible
                 SetEntityCollision(previewModel, true, true) -- Enable collision
+                FreezeEntityPosition(previewModel, true)
 
                 -- Call the callback function with true
                 if callback then
@@ -204,7 +209,7 @@ local function ControlPlacement(previewModel, callback)
             end
 
             -- Cancel placement
-            if IsControlJustPressed(0, 194) then             -- Backspace key
+            if IsControlJustPressed(0, 194) then -- Backspace key
                 -- Delete the preview model
                 DeleteEntity(previewModel)
 
@@ -223,4 +228,11 @@ end
 function PlaceModel(model, position, rotation, callback)
     local previewModel = CreatePreviewModel(model, position, rotation)
     ControlPlacement(previewModel, callback)
+end
+
+function HeadingToCardinal(heading)
+    local directions = { 'N', 'NW', 'W', 'SW', 'S', 'SE', 'E', 'NE', 'N' }
+    local normalizedHeading = ((heading % 360) + 360) % 360
+    local index = math.floor((normalizedHeading + 22.5) / 45)
+    return directions[index + 1] -- Lua arrays start from index 1
 end
