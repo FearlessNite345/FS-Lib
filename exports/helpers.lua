@@ -156,7 +156,7 @@ local function UpdateModelPosition(previewModel, position, rotation)
     SetEntityRotation(previewModel, rotation.x, rotation.y, rotation.z, 2, true)
 end
 
-local function ControlPlacement(previewModel)
+local function ControlPlacement(previewModel, callback)
     local moveSpeed = 1.0
     local verticalSpeed = 1.0
 
@@ -194,6 +194,25 @@ local function ControlPlacement(previewModel)
                 SetEntityAlpha(previewModel, 255, false)     -- Make the model visible
                 SetEntityCollision(previewModel, true, true) -- Enable collision
 
+                -- Call the callback function with true
+                if callback then
+                    callback(true)
+                end
+
+                -- Cleanup
+                break
+            end
+
+            -- Cancel placement
+            if IsControlJustPressed(0, 194) then             -- Backspace key
+                -- Delete the preview model
+                DeleteEntity(previewModel)
+
+                -- Call the callback function with false
+                if callback then
+                    callback(false)
+                end
+
                 -- Cleanup
                 break
             end
@@ -201,7 +220,7 @@ local function ControlPlacement(previewModel)
     end)
 end
 
-function PlaceModel(model, position, rotation)
+function PlaceModel(model, position, rotation, callback)
     local previewModel = CreatePreviewModel(model, position, rotation)
-    ControlPlacement(previewModel)
+    ControlPlacement(previewModel, callback)
 end
