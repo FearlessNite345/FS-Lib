@@ -8,6 +8,6 @@ server_scripts {
   'server/*.lua'
 }
 
-shared_scripts {
-    'exports/*.lua'
+client_scripts {
+    'clientExports/*.lua'
 }
