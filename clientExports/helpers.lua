@@ -273,6 +273,8 @@ local function ControlPlacement(previewModel, callback)
                 FreezeEntityPosition(previewModel, true)
                 if callback then
                     callback(true, previewModel, currentPos, currentRot)
+                else
+                    LogMessage('Callback for the PlaceModel export is nil', true, false, LogLevel.WARN)
                 end
                 break
             end
@@ -281,6 +283,8 @@ local function ControlPlacement(previewModel, callback)
                 DeleteEntity(previewModel)
                 if callback then
                     callback(false, nil)
+                else
+                    LogMessage('Callback for the PlaceModel export is nil', true, false, LogLevel.WARN)
                 end
                 break
             end
