@@ -7,6 +7,20 @@ FS-Lib is a collection of Lua functions designed for FiveM scripts to streamline
 # Docs 
 Feel free to contribute to the docs.
 
+## Exports
+[GetKeyStringFromKeyID](#getkeystringfromkeyid)
+[GetClosestModelWithinDistance](#getclosestmodelwithindistance)
+[GetClosestPedWithinDistance](#getclosestpedwithindistance)
+[SetupModel](#setupmodel)
+[DrawNotification3D](#drawnotification3d)
+[DrawNotification2D](#drawnotification2d)
+[DrawText3D](#drawtext3d)
+[DrawText2D](#drawtext2d)
+[PlaceModel](#placemodel)
+[HeadingToCardinal](#headingtocardinal)
+
+---
+
 ### GetKeyStringFromKeyID
 
 Retrieves the name of the key corresponding to the provided key ID. This function returns the key name based on the current input device (keyboard or controller).
