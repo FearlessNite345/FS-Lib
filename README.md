@@ -7,17 +7,19 @@ FS-Lib is a collection of Lua functions designed for FiveM scripts to streamline
 # Docs 
 Feel free to contribute to the docs.
 
-## Exports
-[GetKeyStringFromKeyID](#getkeystringfromkeyid)
-[GetClosestModelWithinDistance](#getclosestmodelwithindistance)
-[GetClosestPedWithinDistance](#getclosestpedwithindistance)
-[SetupModel](#setupmodel)
-[DrawNotification3D](#drawnotification3d)
-[DrawNotification2D](#drawnotification2d)
-[DrawText3D](#drawtext3d)
-[DrawText2D](#drawtext2d)
-[PlaceModel](#placemodel)
-[HeadingToCardinal](#headingtocardinal)
+## Table of Contents
+
+- [GetKeyStringFromKeyID](#getkeystringfromkeyid)
+- [GetClosestModelWithinDistance](#getclosestmodelwithindistance)
+- [GetClosestPedWithinDistance](#getclosestpedwithindistance)
+- [SetupModel](#setupmodel)
+- [DrawNotification3D](#drawnotification3d)
+- [DrawNotification2D](#drawnotification2d)
+- [DrawText3D](#drawtext3d)
+- [DrawText2D](#drawtext2d)
+- [PlaceModel](#placemodel)
+- [HeadingToCardinal](#headingtocardinal)
+
 
 ---
 
