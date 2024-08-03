@@ -7,20 +7,12 @@ exports('GetClosestModelWithinDistance', function(maxDistance, items)
     return GetClosestModelWithinDistance(maxDistance, items)
 end)
 
-exports('GetClosestPedWithinDistance', function(maxDistance)
-    return GetClosestPedWithinDistance(maxDistance)
-end)
-
-exports('EnumeratePeds', function()
-    return EnumeratePeds()
+exports('GetClosestPedWithinDistance', function(maxDistance, searchType)
+    return GetClosestPedWithinDistance(maxDistance, searchType)
 end)
 
 exports('SetupModel', function(model)
     SetupModel(model)
-end)
-
-exports('RandomLimited', function(min, max, limit)
-    return RandomLimited(min, max, limit)
 end)
 
 exports('DrawNotification3D', function(coords, text, seconds, color)

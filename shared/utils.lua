@@ -29,7 +29,7 @@ function LogMessage(message, broadcast, serverOnly, logLevel)
     if serverOnly then
         if not IsDuplicityVersion() then
             -- If running on the client and serverOnly is true, send the message to the server
-            TriggerServerEvent("FS_Lib:printErrorMessageServer", formattedMessage)
+            TriggerServerEvent("FS_Lib:logMessageServer", formattedMessage)
             return
         end
     else
@@ -40,10 +40,10 @@ function LogMessage(message, broadcast, serverOnly, logLevel)
     if broadcast then
         if IsDuplicityVersion() then
             -- If running on the server, broadcast to all clients
-            TriggerClientEvent("FS_Lib:printErrorMessageClient", -1, formattedMessage)
+            TriggerClientEvent("FS_Lib:logMessageClient", -1, formattedMessage)
         else
             -- If running on the client, send the message to the server
-            TriggerServerEvent("FS_Lib:printErrorMessageServer", formattedMessage)
+            TriggerServerEvent("FS_Lib:logMessageServer", formattedMessage)
         end
     end
 end

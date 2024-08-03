@@ -39,38 +39,42 @@ function GetClosestModelWithinDistance(maxDistance, models)
 end
 
 -- Get the closest pedestrian within a certain distance
-function GetClosestPedWithinDistance(maxDistance)
+-- Specify searchType as "players" to find only real players or "npcs" to find only NPCs
+function GetClosestPedWithinDistance(maxDistance, searchType)
     local playerPed = PlayerPedId()
     local playerCoords = GetEntityCoords(playerPed, false)
 
     local closestPed, closestDistance = nil, maxDistance + 1
 
+    local function EnumeratePeds()
+        return coroutine.wrap(function()
+            local handle, ped = FindFirstPed()
+            local success
+            repeat
+                if not IsEntityDead(ped) then
+                    coroutine.yield(ped)
+                end
+                success, ped = FindNextPed(handle)
+            until not success
+            EndFindPed(handle)
+        end)
+    end
+
     for ped in EnumeratePeds() do
         if ped ~= playerPed then
+            local isPlayer = IsPedAPlayer(ped)
             local pedCoords = GetEntityCoords(ped, false)
             local distance = #(playerCoords - pedCoords)
+
             if distance <= maxDistance and distance < closestDistance then
-                closestPed, closestDistance = ped, distance
+                if searchType == "players" and isPlayer or searchType == "npcs" and not isPlayer then
+                    closestPed, closestDistance = ped, distance
+                end
             end
         end
     end
 
     return closestPed, closestDistance
-end
-
--- Enumerate through all pedestrians
-function EnumeratePeds()
-    return coroutine.wrap(function()
-        local handle, ped = FindFirstPed()
-        local success
-        repeat
-            if not IsEntityDead(ped) then
-                coroutine.yield(ped)
-            end
-            success, ped = FindNextPed(handle)
-        until not success
-        EndFindPed(handle)
-    end)
 end
 
 -- Load and set up a model
@@ -80,15 +84,6 @@ function SetupModel(model)
         Citizen.Wait(0)
     end
     SetModelAsNoLongerNeeded(model)
-end
-
--- Generate a random number within a range, ensuring it's above a certain limit
-function RandomLimited(min, max, limit)
-    local result
-    repeat
-        result = math.random(min, max)
-    until math.abs(result) >= limit
-    return result
 end
 
 -- Draw a 3D notification
@@ -280,7 +275,7 @@ local function ControlPlacement(previewModel, callback)
             if IsControlJustPressed(0, 194) then
                 DeleteEntity(previewModel)
                 if callback then
-                    callback(false, nil)
+                    callback(false)
                 end
                 break
             end
