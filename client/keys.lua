@@ -1,4 +1,4 @@
-local Keys = {
+Keys = {
     [0] = "V",
     [1] = "MOUSE RIGHT",
     [2] = "MOUSE DOWN",
@@ -359,7 +359,7 @@ local Keys = {
     [357] = "X",
 }
 
-local controllerKeys = {
+ControllerKeys = {
     [0] = 'BACK',
     [1] = 'RIGHT STICK',
     [2] = 'RIGHT STICK',
@@ -720,12 +720,3 @@ local controllerKeys = {
     [357] = 'A',
     [358] = 'RB',
 }
-
-
-function GetKeyStringFromKeyID(keyID)
-    if IsUsingKeyboard(0) then
-        return Keys[keyID] or '(NONE)', 0
-    else
-        return controllerKeys[keyID] or '(NONE)', 1
-    end
-end
