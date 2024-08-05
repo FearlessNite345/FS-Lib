@@ -79,7 +79,7 @@ Finds the closest pedestrian (NPC or player) within a specified distance from th
 #### Parameters:
 
 - `maxDistance`: The maximum distance within which to search for pedestrians (number).
-- `searchType`: Type of pedestrian to search for. Use "players" to find players or "npcs" to find NPCs (string).
+- `searchType`: Type of pedestrian to search for. Use "players" to find players or "npcs" to find NPCs or "both" to find both (string).
 
 #### Returns:
 
