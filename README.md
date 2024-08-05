@@ -56,7 +56,7 @@ Finds the closest model within a specified distance from the player's current lo
 #### Parameters:
 
 - `maxDistance`: The maximum distance within which to search for the model (number).
-- `models`: A single model hash or a table of model hashes (number or table).
+- `objects`: A single model hash or a table of model hashes (number or table).
 
 #### Returns:
 
@@ -65,7 +65,7 @@ Finds the closest model within a specified distance from the player's current lo
 #### Example:
 
 ```lua
-local closestCoords, closestHandle = exports['FS-Lib']:GetClosestModelWithinDistance(50.0, 123456)
+local closestCoords, closestHandle = exports['FS-Lib']:GetClosestObjectWithinDist(50.0, 123456)
 print("Closest Model Coords: " .. closestCoords)
 print("Closest Model Handle: " .. closestHandle)
 ```
@@ -88,30 +88,34 @@ Finds the closest pedestrian (NPC or player) within a specified distance from th
 #### Example:
 
 ```lua
-local closestPed, distance = exports['FS-Lib']:GetClosestPedWithinDistance(30.0, "players")
+local closestPed, distance = exports['FS-Lib']:GetClosestPedWithinDist(30.0, "players")
 print("Closest Pedestrian: " .. closestPed)
 print("Distance: " .. distance)
 ```
 
-### GetClosestObjectWithinDist
+### GetObjectsWithinDist
 
-Finds the closest model within a specified distance from the player's current location.
+Finds the objects within a specified distance from the player's current location.
 
 #### Parameters:
 
 - `maxDistance`: The maximum distance within which to search for the model (number).
-- `models`: A single model hash or a table of model hashes (number or table).
+- `objects`: A single model hash or a table of model hashes (number or table).
 
 #### Returns:
 
-- A tuple where the first element is the coordinates of the closest model (vector3), and the second element is the handle of the closest model (number).
+- A table of all objects
 
 #### Example:
 
 ```lua
-local closestCoords, closestHandle = exports['FS-Lib']:GetClosestModelWithinDistance(50.0, 123456)
-print("Closest Model Coords: " .. closestCoords)
-print("Closest Model Handle: " .. closestHandle)
+local objects = exports['FS-Lib']:GetObjectsWithinDist(30.0, "players")
+
+for _, data in ipairs(peds) do
+    print(data.object)
+    print(data.objectCoords)
+    print(data.objectDist)
+end
 ```
 
 ---
@@ -127,14 +131,17 @@ Finds the peds (NPC or player or both) within a specified distance from the play
 
 #### Returns:
 
-- A tuple where the first element is the closest pedestrian (Ped), and the second element is the distance to the closest pedestrian (number).
+- A table of all peds
 
 #### Example:
 
 ```lua
-local closestPed, distance = exports['FS-Lib']:GetClosestPedWithinDistance(30.0, "players")
-print("Closest Pedestrian: " .. closestPed)
-print("Distance: " .. distance)
+local peds = exports['FS-Lib']:GetPedsWithinDist(30.0, "players")
+
+for _, data in ipairs(peds) do
+    print(data.ped)
+    print(data.distance)
+end
 ```
 
 ---
