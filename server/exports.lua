@@ -39,7 +39,8 @@ exports('VersionCheck', function(resourceName, githubRepo)
     local current = GetResourceMetadata(GetInvokingResource(), "version", 0)
     current = current:match("v?(%d+%.%d+%.%d+)")
     if not current then
-        printVersion('Current version: ^1Invalid version format', 'Latest version: ^1Not fetched due to incorrect current version format', '^1Error')
+        printVersion('Current version: ^1Invalid version format',
+            'Latest version: ^1Not fetched due to incorrect current version format', '^1Error')
         return
     end
     cur = "Current version: " .. current

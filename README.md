@@ -51,23 +51,22 @@ print("Key Name: " .. keyName .. "Device Type: " .. deviceType)
 
 ### GetClosestObjectWithinDist
 
-Finds the closest model within a specified distance from the player's current location.
+Finds the closest object within a specified distance from the player's current location.
 
 #### Parameters:
 
 - `maxDistance`: The maximum distance within which to search for the model (number).
-- `objects`: A single model hash or a table of model hashes (number or table).
 
 #### Returns:
 
-- A tuple where the first element is the coordinates of the closest model (vector3), and the second element is the handle of the closest model (number).
+- `closestObj`: The object it found
+- `closestDist`: The distance to that object
+- `closestCoords`: The coords of the object
 
 #### Example:
 
 ```lua
-local closestCoords, closestHandle = exports['FS-Lib']:GetClosestObjectWithinDist(50.0, 123456)
-print("Closest Model Coords: " .. closestCoords)
-print("Closest Model Handle: " .. closestHandle)
+local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestObjectWithinDist(50.0)
 ```
 
 ---
@@ -83,14 +82,14 @@ Finds the closest pedestrian (NPC or player) within a specified distance from th
 
 #### Returns:
 
-- A tuple where the first element is the closest pedestrian (Ped), and the second element is the distance to the closest pedestrian (number).
+- `closestPed`: The ped it found
+- `closestDist`: The distance to that ped
+- `closestCoords`: The coords of the ped
 
 #### Example:
 
 ```lua
-local closestPed, distance = exports['FS-Lib']:GetClosestPedWithinDist(30.0, "players")
-print("Closest Pedestrian: " .. closestPed)
-print("Distance: " .. distance)
+local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestPedWithinDist(30.0, "players")
 ```
 
 ### GetObjectsWithinDist
@@ -100,7 +99,6 @@ Finds the objects within a specified distance from the player's current location
 #### Parameters:
 
 - `maxDistance`: The maximum distance within which to search for the model (number).
-- `objects`: A single model hash or a table of model hashes (number or table).
 
 #### Returns:
 
@@ -109,12 +107,12 @@ Finds the objects within a specified distance from the player's current location
 #### Example:
 
 ```lua
-local objects = exports['FS-Lib']:GetObjectsWithinDist(30.0, "players")
+local objects = exports['FS-Lib']:GetObjectsWithinDist(30.0)
 
-for _, data in ipairs(peds) do
+for _, data in ipairs(objects) do
     print(data.object)
-    print(data.objectCoords)
-    print(data.objectDist)
+    print(data.objCoords)
+    print(data.dist)
 end
 ```
 
@@ -140,7 +138,8 @@ local peds = exports['FS-Lib']:GetPedsWithinDist(30.0, "players")
 
 for _, data in ipairs(peds) do
     print(data.ped)
-    print(data.distance)
+    print(data.dist)
+    print(data.pedCoords)
 end
 ```
 
@@ -202,9 +201,9 @@ exports['FS-Lib']:DrawText2D(0.5, 0.8, "2D Text", 0.6, true)
 
 ---
 
-### PlaceModel
+### PlaceObject
 
-Places a model at a specified position with keyboard control.
+Places a object at a specified position with keyboard control.
 
 #### Parameters:
 
@@ -219,21 +218,21 @@ Places a model at a specified position with keyboard control.
 
 ###### Only a param if success is TRUE otherwise they will be nil
 
-- `Model`: The model that was actually placed
+- `Object`: The model that was actually placed
 - `Current Position`: The position the model was placed at
 - `Current Rotation`: The roation the model was placed with
 
 #### Example:
 
 ```lua
-exports['FS-Lib']:PlaceModel(123456, vector3(100.0, 200.0, 300.0), vector3(0.0, 0.0, 90.0), function(Success, Model, CurrentPos, CurrentRot)
+exports['FS-Lib']:PlaceModel(123456, vector3(100.0, 200.0, 300.0), vector3(0.0, 0.0, 90.0), function(Success, Object, CurrentPos, CurrentRot)
     if success then
-        print("Model placed successfully.")
-        print("Model:" .. Model)
+        print("Object placed successfully.")
+        print("Object:" .. Object)
         print("Position:" .. CurrentPos)
         print("Rotation:" .. CurrentRot)
     else
-        print("Model placement failed.")
+        print("Object placement failed.")
     end
 end)
 ```

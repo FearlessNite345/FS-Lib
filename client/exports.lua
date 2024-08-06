@@ -19,43 +19,27 @@ exports('GetKeyStringFromKeyID', function(keyID)
 end)
 
 -- Get the closest object within a certain distance
-exports('GetClosestObjectWithinDist', function(maxDistance, objects)
+exports('GetClosestObjectWithinDist', function(maxDistance)
     if not maxDistance then
         LogMessage('maxDistance param in GetClosestObjectWithinDist is nil', false, false, LogLevel.ERROR)
         return
-    elseif not objects then
-        LogMessage('objects param in GetClosestObjectWithinDist is nil', false, false, LogLevel.ERROR)
-        return
     end
 
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed, false)
+    -- Rewrite
+    local objPool = GetGamePool('CObject')
+    local closestObj, closestDist, closestCoords
 
-    local closestObjectCoords, closestObjectHandle
-    local closestDistance = maxDistance + 1
+    for i = 1, #objPool do
+        local obj = objPool[i]
+        local objCoords = GetEntityCoords(obj, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - objCoords)
 
-    local function checkAndUpdateClosest(objectHash)
-        local objectHandle = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, maxDistance, objectHash, false, false, false)
-        if DoesEntityExist(objectHandle) then
-            local objectCoords = GetEntityCoords(objectHandle, false)
-            local distance = #(playerCoords - objectCoords)
-            if distance <= maxDistance and distance < closestDistance then
-                closestObjectCoords = objectCoords
-                closestObjectHandle = objectHandle
-                closestDistance = distance
-            end
+        if dist <= maxDistance and dist < closestDist then
+            closestObj, closestDist, closestCoords = obj, dist, objCoords
         end
     end
 
-    if type(objects) == "table" then
-        for _, objectHash in ipairs(objects) do
-            checkAndUpdateClosest(objectHash)
-        end
-    else
-        checkAndUpdateClosest(objects)
-    end
-
-    return closestObjectCoords, closestObjectHandle
+    return closestObj, closestDist, closestCoords
 end)
 
 -- Get the closest pedestrian within a certain distance
@@ -69,76 +53,48 @@ exports('GetClosestPedWithinDist', function(maxDistance, searchType)
         return
     end
 
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed, false)
+    -- Rewrite
+    local pedPool = GetGamePool('CPed')
+    local closestPed, closestDist, closestCoords
 
-    local closestPed, closestDistance = nil, maxDistance + 1
+    for i = 1, #pedPool do
+        local ped = pedPool[i]
+        local pedCoords = GetEntityCoords(ped, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - pedCoords)
 
-    local function EnumeratePeds()
-        return coroutine.wrap(function()
-            local handle, ped = FindFirstPed()
-            local success
-            repeat
-                if not IsEntityDead(ped) then
-                    coroutine.yield(ped)
-                end
-                success, ped = FindNextPed(handle)
-            until not success
-            EndFindPed(handle)
-        end)
-    end
+        local isPlayer = IsPedAPlayer(ped)
 
-    for ped in EnumeratePeds() do
-        if ped ~= playerPed then
-            local isPlayer = IsPedAPlayer(ped)
-            local pedCoords = GetEntityCoords(ped, false)
-            local distance = #(playerCoords - pedCoords)
-
-            if distance <= maxDistance and distance < closestDistance then
-                if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
-                    closestPed, closestDistance = ped, distance
-                end
+        if dist <= maxDistance and dist < closestDist then
+            if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
+                closestPed, closestDist, closestCoords = ped, dist, pedCoords
             end
         end
     end
 
-    return closestPed, closestDistance
+    return closestPed, closestDist, closestCoords
 end)
 
-exports('GetObjectsWithinDist', function(maxDistance, objects)
+exports('GetObjectsWithinDist', function(maxDistance)
     if not maxDistance then
         LogMessage('maxDistance param in GetObjectsWithinDist is nil', false, false, LogLevel.ERROR)
         return
-    elseif not objects then
-        LogMessage('objects param in GetObjectsWithinDist is nil', false, false, LogLevel.ERROR)
-        return
     end
 
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed, false)
+    -- Rewrite
+    local objPool = GetGamePool('CObject')
+    local objects = {}
 
-    local objectsWithinDist = {}
+    for i = 1, #objPool do
+        local obj = objPool[i]
+        local objCoords = GetEntityCoords(obj, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - objCoords)
 
-    local function checkAndUpdateClosest(objectHash)
-        local objectHandle = GetClosestObjectOfType(playerCoords.x, playerCoords.y, playerCoords.z, maxDistance, objectHash, false, false, false)
-        if DoesEntityExist(objectHandle) then
-            local objectCoords = GetEntityCoords(objectHandle, false)
-            local distance = #(playerCoords - objectCoords)
-            if distance <= maxDistance then
-                table.insert(objectsWithinDist, { object = objectHandle, objectCoords = objectCoords, objectDist = distance })
-            end
+        if dist <= maxDistance then
+            table.insert(objects, { object = obj, dist = dist, objCoords = objCoords })
         end
     end
 
-    if type(objects) == "table" then
-        for _, objectHash in ipairs(objects) do
-            checkAndUpdateClosest(objectHash)
-        end
-    else
-        checkAndUpdateClosest(objects)
-    end
-
-    return objectsWithinDist
+    return objects
 end)
 
 exports('GetPedsWithinDist', function(maxDistance, searchType)
@@ -150,40 +106,25 @@ exports('GetPedsWithinDist', function(maxDistance, searchType)
         return
     end
 
-    local playerPed = PlayerPedId()
-    local playerCoords = GetEntityCoords(playerPed, false)
+    -- Rewrite
+    local pedPool = GetGamePool('CPed')
+    local peds = {}
 
-    local pedsWithinDist = {}
+    for i = 1, #pedPool do
+        local ped = pedPool[i]
+        local pedCoords = GetEntityCoords(ped, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - pedCoords)
 
-    local function EnumeratePeds()
-        return coroutine.wrap(function()
-            local handle, ped = FindFirstPed()
-            local success
-            repeat
-                if not IsEntityDead(ped) then
-                    coroutine.yield(ped)
-                end
-                success, ped = FindNextPed(handle)
-            until not success
-            EndFindPed(handle)
-        end)
-    end
+        local isPlayer = IsPedAPlayer(ped)
 
-    for ped in EnumeratePeds() do
-        if ped ~= playerPed then
-            local isPlayer = IsPedAPlayer(ped)
-            local pedCoords = GetEntityCoords(ped, false)
-            local distance = #(playerCoords - pedCoords)
-
-            if distance <= maxDistance then
-                if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
-                    table.insert(pedsWithinDist, { ped = ped, distance = distance })
-                end
+        if dist <= maxDistance then
+            if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
+                table.insert(peds, { ped = ped, dist = dist, pedCoords = pedCoords })
             end
         end
     end
 
-    return pedsWithinDist
+    return peds
 end)
 
 -- Load and set up a model
@@ -398,7 +339,7 @@ exports('HeadingToCardinal', function(heading)
         LogMessage('heading param in HeadingToCardinal is nil', false, false, LogLevel.ERROR)
         return
     end
-    
+
     local directions = { 'N', 'NW', 'W', 'SW', 'S', 'SE', 'E', 'NE', 'N' }
     local normalizedHeading = ((heading % 360) + 360) % 360
     local index = math.floor((normalizedHeading + 22.5) / 45)
