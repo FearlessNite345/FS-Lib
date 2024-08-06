@@ -16,8 +16,6 @@ Feel free to contribute to the docs.
 - [GetObjectsWithinDist](#getclosestmodelwithindistance)
 - [GetPedsWithinDist](#getclosestpedwithindistance)
 - [SetupModel](#setupmodel)
-- [DrawNotification3D](#drawnotification3d)
-- [DrawNotification2D](#drawnotification2d)
 - [DrawText3D](#drawtext3d)
 - [DrawText2D](#drawtext2d)
 - [PlaceModel](#placemodel)
