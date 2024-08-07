@@ -20,11 +20,8 @@ function LogMessage(message, broadcast, serverOnly, logLevel)
     -- Determine the log prefix based on the provided log level
     local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
 
-    -- Get the current date and time
-    local date = os.date("%Y-%m-%d %H:%M:%S")
-
     -- Format the error message with the log level prefix
-    local formattedMessage = string.format("%s [%s] [FS-Lib] %s", logPrefix, date, message)
+    local formattedMessage = string.format("%s [FS-Lib] %s", logPrefix, message)
 
     if serverOnly then
         if not IsDuplicityVersion() then

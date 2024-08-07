@@ -27,7 +27,7 @@ exports('GetClosestObjectWithinDist', function(maxDistance)
 
     -- Rewrite
     local objPool = GetGamePool('CObject')
-    local closestObj, closestDist, closestCoords
+    local closestObj, closestDist, closestCoords = nil, 9999, nil
 
     for i = 1, #objPool do
         local obj = objPool[i]
@@ -55,7 +55,7 @@ exports('GetClosestPedWithinDist', function(maxDistance, searchType)
 
     -- Rewrite
     local pedPool = GetGamePool('CPed')
-    local closestPed, closestDist, closestCoords
+    local closestPed, closestDist, closestCoords = nil, 9999, nil
 
     for i = 1, #pedPool do
         local ped = pedPool[i]
