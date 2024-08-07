@@ -1,6 +1,7 @@
 # FS-Lib
 
-![Github All Releases](https://img.shields.io/github/downloads/FearlessNite345/FS-Lib/total.svg)
+![Github All Releases](https://img.shields.io/github/downloads/FearlessNite345/FS-lib/total.svg)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/fearlessnite345/fs-lib/latest/total)
 
 FS-Lib is a collection of Lua functions designed for FiveM scripts to streamline various common tasks. It is mainly used in FearlessStudios scripts. Below is a detailed guide on how to use each function exposed by FS-Lib.
 
