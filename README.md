@@ -26,6 +26,7 @@ Feel free to contribute to the docs.
 - [HeadingToCardinal](#headingtocardinal)
 - [IsInInterior](#isininterior)
 - [GetStreetName](#getstreetname)
+- [IsVehicleEmpty](#isvehicleempty)
 
 ##### Server
 - [VersionCheck](#versioncheck)
