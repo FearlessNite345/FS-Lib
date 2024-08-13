@@ -2,10 +2,10 @@ exports('VersionCheck', function(resourceName, githubRepo)
     -- GitHub info to check the version
 
     if not resourceName then
-        LogMessage('resourceName param in VersionCheck is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'resourceName param in VersionCheck is nil', false, false)
         return
     elseif not githubRepo then
-        LogMessage('githubRepo param in VersionCheck is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'githubRepo param in VersionCheck is nil', false, false)
         return
     end
 
@@ -35,7 +35,6 @@ exports('VersionCheck', function(resourceName, githubRepo)
     local late = ''
     local status = ''
 
-    print(GetInvokingResource())
     local current = GetResourceMetadata(GetInvokingResource(), "version", 0)
     current = current:match("v?(%d+%.%d+%.%d+)")
     if not current then

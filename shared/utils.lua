@@ -6,7 +6,7 @@ LogLevel = {
 }
 
 -- Function to print a formatted error message with logging levels
-function LogMessage(message, broadcast, serverOnly, logLevel)
+function LogMessage(invokingResource, message, broadcast, serverOnly, logLevel)
     -- Define log level prefixes
     local logPrefixes = {
         [LogLevel.INFO] = "^2[INFO]",
@@ -21,7 +21,7 @@ function LogMessage(message, broadcast, serverOnly, logLevel)
     local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
 
     -- Format the error message with the log level prefix
-    local formattedMessage = string.format("%s [FS-Lib] %s", logPrefix, message)
+    local formattedMessage = string.format("%s [FS-Lib] [Invoking Resource: %s] %s", invokingResource, logPrefix, message)
 
     if serverOnly then
         if not IsDuplicityVersion() then

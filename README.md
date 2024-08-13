@@ -11,21 +11,28 @@ Feel free to contribute to the docs.
 
 ## Table of Contents
 
-- [GetKeyStringFromKeyID](#getkeystringfromkeyid)
-- [GetClosestObjectWithinDist](#getclosestobjectwithindist)
-- [GetClosestPedWithinDist](#getclosestpedwithindist)
-- [GetObjectsWithinDist](#getobjectswithindist)
-- [GetPedsWithinDist](#getpedswithindist)
+##### Client
+- [GetKeyString](#getkeystringfromkeyid)
+- [GetClosestObject](#getclosestobjectwithindist)
+- [GetClosestPed](#getclosestpedwithindist)
+- [GetClosestVehicle](#getclosestvehiclewithindist)
+- [GetNearbyObjects](#getobjectswithindist)
+- [GetNearbyPeds](#getpedswithindist)
+- [GetNearbyVehicles](#getvehicleswithindist)
 - [SetupModel](#setupmodel)
 - [DrawText3D](#drawtext3d)
 - [DrawText2D](#drawtext2d)
 - [PlaceModel](#placemodel)
 - [HeadingToCardinal](#headingtocardinal)
+- [IsInInterior](#isininterior)
+- [GetStreetName](#getstreetname)
+
+##### Server
 - [VersionCheck](#versioncheck)
 
 ---
 
-### GetKeyStringFromKeyID
+### GetKeyString
 
 Retrieves the name of the key corresponding to the provided key ID. This function returns the key name based on the current input device (keyboard or controller).
 
@@ -35,20 +42,18 @@ Retrieves the name of the key corresponding to the provided key ID. This functio
 
 #### Returns:
 
-- A tuple where the first element is the key name (`string`) and the second element is the input device type (`number`):
-  - `0` for keyboard
-  - `1` for controller
+- string with the KEY name
 
 #### Example:
 
 ```lua
-local keyName, deviceType = exports['FS-Lib']:GetKeyStringFromKeyID(38)
-print("Key Name: " .. keyName .. "Device Type: " .. deviceType)
+local keyName = exports['FS-Lib']:GetKeyString(38)
+print("Key Name: " .. keyName)
 ```
 
 ---
 
-### GetClosestObjectWithinDist
+### GetClosestObject
 
 Finds the closest object within a specified distance from the player's current location.
 
@@ -65,12 +70,12 @@ Finds the closest object within a specified distance from the player's current l
 #### Example:
 
 ```lua
-local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestObjectWithinDist(50.0)
+local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestObject(10.0)
 ```
 
 ---
 
-### GetClosestPedWithinDist
+### GetClosestPed
 
 Finds the closest pedestrian (NPC or player) within a specified distance from the player's current location.
 
@@ -88,10 +93,32 @@ Finds the closest pedestrian (NPC or player) within a specified distance from th
 #### Example:
 
 ```lua
-local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestPedWithinDist(30.0, "players")
+local closestPed, closestDist, closestCoords = exports['FS-Lib']:GetClosestPed(10.0, "players")
 ```
 
-### GetObjectsWithinDist
+---
+
+### GetClosestVehicle
+
+Finds the closest vehicle within a specified distance from the player's current location.
+
+#### Parameters:
+
+- `maxDistance`: The maximum distance within which to search for pedestrians (number).
+
+#### Returns:
+
+- `closestVeh`: The vehicle it found
+- `closestDist`: The distance to that ped
+- `closestCoords`: The coords of the ped
+
+#### Example:
+
+```lua
+local closestVeh, closestDist, closestCoords = exports['FS-Lib']:GetClosestVehicle(10.0)
+```
+
+### GetNearbyObjects
 
 Finds the objects within a specified distance from the player's current location.
 
@@ -106,7 +133,7 @@ Finds the objects within a specified distance from the player's current location
 #### Example:
 
 ```lua
-local objects = exports['FS-Lib']:GetObjectsWithinDist(30.0)
+local objects = exports['FS-Lib']:GetNearbyObjects(10.0)
 
 for _, data in ipairs(objects) do
     print(data.object)
@@ -117,7 +144,7 @@ end
 
 ---
 
-### GetPedsWithinDist
+### GetNearbyPeds
 
 Finds the peds (NPC or player or both) within a specified distance from the player's current location.
 
@@ -133,12 +160,37 @@ Finds the peds (NPC or player or both) within a specified distance from the play
 #### Example:
 
 ```lua
-local peds = exports['FS-Lib']:GetPedsWithinDist(30.0, "players")
+local peds = exports['FS-Lib']:GetNearbyPeds(10.0, "players")
 
 for _, data in ipairs(peds) do
     print(data.ped)
     print(data.dist)
     print(data.pedCoords)
+end
+```
+---
+
+### GetNearbyVehicles
+
+Finds the vehicles within a specified distance from the player's current location.
+
+#### Parameters:
+
+- `maxDistance`: The maximum distance within which to search for pedestrians (number).
+
+#### Returns:
+
+- A table of all vehicles
+
+#### Example:
+
+```lua
+local vehicles = exports['FS-Lib']:GetNearbyVehicles(10.0)
+
+for _, data in ipairs(peds) do
+    print(data.vehicle)
+    print(data.dist)
+    print(data.vehCoords)
 end
 ```
 
@@ -209,6 +261,9 @@ Places a object at a specified position with keyboard control.
 - `model`: The model to place (number or string).
 - `position`: The position to place the model (vector3).
 - `rotation`: The rotation of the model (vector3).
+
+#### Optional Parameters:
+
 - `callback`: Function to call after placement (function).
 
 #### Callback Params
@@ -255,6 +310,62 @@ Converts a heading value to a cardinal direction.
 ```lua
 local direction = exports['FS-Lib']:HeadingToCardinal(45)
 print("Cardinal Direction: " .. direction)
+```
+
+---
+
+### IsInInterior
+
+Returns true or false if the current player is in a interior
+
+### Example:
+```lua
+local isInInterior = exports['FS-Lib']:IsInInterior()
+print(tostring(isInInterior))
+```
+
+---
+
+### GetStreetName
+
+Returns the street name at the coords provided
+
+#### Parameters:
+
+- `x`: The x coordinate
+- `y`: The y coordinate
+- `z`: The z coordinate
+
+#### Returns:
+
+- The street name at those coords
+
+#### Example:
+
+```lua
+local streetName = exports['FS-Lib']:GetStreetName(0, 0, 0)
+print("Street Name: " .. streetName)
+```
+
+---
+
+### IsVehicleEmpty
+
+Returns true or false depending on if the vehicle provided is empty
+
+#### Parameters:
+
+- `Vehicle`: The vehicle you would like to check
+
+#### Returns:
+
+- True if the vehicle is empty otherwise it returns false
+
+#### Example:
+
+```lua
+local isVehEmpty = exports['FS-Lib']:IsVehicleEmpty(veh)
+print(tostring(isVehEmpty))
 ```
 
 ---

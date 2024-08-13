@@ -5,23 +5,19 @@ local MOVE_SPEED = 0.01
 local VERTICAL_SPEED = 0.01
 local ROTATE_SPEED = 0.7
 
-exports('GetKeyStringFromKeyID', function(keyID)
+exports('GetKeyString', function(keyID)
     if not keyID then
-        LogMessage('keyID param in GetKeyStringFromKeyID is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'keyID param in GetKeyStringFromKeyID is nil', false, false)
         return
     end
 
-    if IsUsingKeyboard(0) then
-        return Keys[keyID] or '(NONE)', 0
-    else
-        return ControllerKeys[keyID] or '(NONE)', 1
-    end
+    return Keys[keyID] or '(NONE)'
 end)
 
 -- Get the closest object within a certain distance
-exports('GetClosestObjectWithinDist', function(maxDistance)
+exports('GetClosestObject', function(maxDistance)
     if not maxDistance then
-        LogMessage('maxDistance param in GetClosestObjectWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestObjectWithinDist is nil', false, false)
         return
     end
 
@@ -44,12 +40,12 @@ end)
 
 -- Get the closest pedestrian within a certain distance
 -- Specify searchType as "players" to find only real players or "npcs" to find only NPCs
-exports('GetClosestPedWithinDist', function(maxDistance, searchType)
+exports('GetClosestPed', function(maxDistance, searchType)
     if not maxDistance then
-        LogMessage('maxDistance param in GetClosestPedWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestPedWithinDist is nil', false, false)
         return
     elseif not searchType then
-        LogMessage('searchType param in GetClosestPedWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'searchType param in GetClosestPedWithinDist is nil', false, false)
         return
     end
 
@@ -74,9 +70,32 @@ exports('GetClosestPedWithinDist', function(maxDistance, searchType)
     return closestPed, closestDist, closestCoords
 end)
 
-exports('GetObjectsWithinDist', function(maxDistance)
+exports('GetClosestVehicle', function(maxDistance)
     if not maxDistance then
-        LogMessage('maxDistance param in GetObjectsWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestVehicleWithinDist is nil', false, false)
+        return
+    end
+
+    -- Rewrite
+    local vehPool = GetGamePool('CVehicle')
+    local closestVeh, closestDist, closestCoords = nil, 9999, nil
+
+    for i = 1, #vehPool do
+        local veh = vehPool[i]
+        local vehCoords = GetEntityCoords(veh, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - vehCoords)
+
+        if dist <= maxDistance and dist < closestDist then
+            closestVeh, closestDist, closestCoords = veh, dist, vehCoords
+        end
+    end
+
+    return closestVeh, closestDist, closestCoords
+end)
+
+exports('GetNearbyObjects', function(maxDistance)
+    if not maxDistance then
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetObjectsWithinDist is nil', false, false)
         return
     end
 
@@ -97,12 +116,12 @@ exports('GetObjectsWithinDist', function(maxDistance)
     return objects
 end)
 
-exports('GetPedsWithinDist', function(maxDistance, searchType)
+exports('GetNearbyPeds', function(maxDistance, searchType)
     if not maxDistance then
-        LogMessage('maxDistance param in GetPedsWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil', false, false)
         return
     elseif not searchType then
-        LogMessage('searchType param in GetPedsWithinDist is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'searchType param in GetPedsWithinDist is nil', false, false)
         return
     end
 
@@ -127,10 +146,33 @@ exports('GetPedsWithinDist', function(maxDistance, searchType)
     return peds
 end)
 
+exports('GetNearbyVehicles', function(maxDistance)
+    if not maxDistance then
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil', false, false)
+        return
+    end
+
+    -- Rewrite
+    local vehPool = GetGamePool('CVehicle')
+    local vehs = {}
+
+    for i = 1, #vehPool do
+        local veh = vehPool[i]
+        local vehCoords = GetEntityCoords(veh, false)
+        local dist = #(GetEntityCoords(PlayerPedId(), false) - vehCoords)
+
+        if dist <= maxDistance then
+            table.insert(vehs, { vehicle = veh, dist = dist, vehCoords = vehCoords })
+        end
+    end
+
+    return vehs
+end)
+
 -- Load and set up a model
 exports('SetupModel', function(object)
     if not object then
-        LogMessage('object param in SetupModel is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'object param in SetupModel is nil', false, false)
         return
     end
 
@@ -319,13 +361,13 @@ end
 -- Place a object at a specified position with keyboard control
 exports('PlaceObject', function(object, position, rotation, callback)
     if not object then
-        LogMessage('object param in PlaceObject is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'object param in PlaceObject is nil', false, false)
         return
     elseif not position then
-        LogMessage('position param in PlaceObject is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'position param in PlaceObject is nil', false, false)
         return
     elseif not rotation then
-        LogMessage('rotation param in PlaceObject is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'rotation param in PlaceObject is nil', false, false)
         return
     end
 
@@ -336,7 +378,7 @@ end)
 -- Convert heading to cardinal direction
 exports('HeadingToCardinal', function(heading)
     if not heading then
-        LogMessage('heading param in HeadingToCardinal is nil', false, false, LogLevel.ERROR)
+        LogMessage(GetInvokingResource(), 'heading param in HeadingToCardinal is nil', false, false)
         return
     end
 
@@ -345,3 +387,37 @@ exports('HeadingToCardinal', function(heading)
     local index = math.floor((normalizedHeading + 22.5) / 45)
     return directions[index + 1]
 end)
+
+exports('IsInInterior', function()
+    local interior = GetInteriorFromEntity(PlayerPedId())
+
+    if interior ~= 0 then
+        return true
+    else
+        return false
+    end
+end)
+
+exports('GetStreetName', function(x, y, z)
+    local streetHash = GetStreetNameAtCoord(x, y, z)
+    return GetStreetNameFromHashKey(streetHash)
+end)
+
+exports('IsVehicleEmpty', function(vehicle)
+    -- Ensure the vehicle is valid
+    if not DoesEntityExist(vehicle) then return false end
+
+    -- Get the number of seats in the vehicle
+    local maxSeats = GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))
+
+    -- Check each seat to see if it's occupied
+    for seat = -1, maxSeats - 2 do
+        if not IsVehicleSeatFree(vehicle, seat) then
+            return false -- If any seat is occupied, the vehicle is not empty
+        end
+    end
+
+    return true -- All seats are free, the vehicle is empty
+end)
+
+

@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game "gta5"
 author "FearlessStudios"
-version '1.2.1'
+version '1.3.0'
 lua54 'yes'
 
 server_scripts {
