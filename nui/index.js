@@ -12,7 +12,11 @@ function createToast(message, type = 'info', duration = 5000) {
       : type === 'warn'
       ? 'text-yellow-400'
       : type === 'police'
-      ? 'text-blue-400'
+      ? 'text-blue-600'
+      : type === 'medic'
+      ? 'text-red-500'
+      : type === 'fire'
+      ? 'text-yellow-500'
       : 'text-blue-400'; // Default gray for general notifications
 
   const iconClass =
@@ -24,6 +28,10 @@ function createToast(message, type = 'info', duration = 5000) {
       ? 'fas fa-exclamation-circle'
       : type === 'police'
       ? 'fa-solid fa-handcuffs'
+      : type === 'medic'
+      ? 'fa-solid fa-stethoscope'
+      : type === 'fire'
+      ? 'fa-solid fa-fire-extinguisher'
       : 'fas fa-info-circle'; // Default icon for general notifications
 
   const bgClass =
@@ -35,6 +43,10 @@ function createToast(message, type = 'info', duration = 5000) {
       ? 'toast-warn'
       : type === 'police'
       ? 'toast-police'
+      : type === 'medic'
+      ? 'toast-medic'
+      : type === 'fire'
+      ? 'toast-fire'
       : 'toast-info'; // Default icon for general notifications
 
   const toast = document.createElement('div');
@@ -69,12 +81,15 @@ function createToast(message, type = 'info', duration = 5000) {
 
 showToastButton.addEventListener('click', () => {
   createToast('Success! Operation completed successfully.', 'success');
+  createToast('Success! Operation completed successfully.', 'warn');
+  createToast('Success! Operation completed successfully.', 'error');
+  createToast('Success! Operation completed successfully.', '');
   createToast(
-    'Warning! Check your inputs. This is a longer message with more text.',
-    'warn'
+    'Success! Operation completed successfully.',
+    'medic'
   );
-  createToast('Error! Something went wrong.', 'error');
-  createToast('General notification with default settings.', 'police');
+  createToast('Success! Operation completed successfully.', 'fire');
+  createToast('Success! Operation completed successfully.', 'police');
 });
 
 window.addEventListener('message', function (data) {
