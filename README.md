@@ -372,7 +372,7 @@ print(tostring(isVehEmpty))
 
 ---
 
-### Notify
+### Notify (Coming in v1.4.0)
 
 Sends a toast notification to the player
 
