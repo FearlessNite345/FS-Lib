@@ -1,88 +1,89 @@
-exports('VersionCheck', function(resourceName, githubRepo)
-    -- GitHub info to check the version
+-- Localize functions
+local GetResourceMetadata = GetResourceMetadata
+local PerformHttpRequest = PerformHttpRequest
+local GetInvokingResource = GetInvokingResource
+local jsonDecode = json.decode
 
-    if not resourceName then
-        LogMessage(GetInvokingResource(), 'resourceName param in VersionCheck is nil', false, false)
-        return
-    elseif not githubRepo then
-        LogMessage(GetInvokingResource(), 'githubRepo param in VersionCheck is nil', false, false)
+exports('VersionCheck', function(resourceName, githubRepo)
+    if not resourceName or not githubRepo then
+        LogMessage(GetInvokingResource(), resourceName and 'githubRepo param in VersionCheck is nil' or 'resourceName param in VersionCheck is nil', false, false)
         return
     end
 
-    local finalName = '^3[' .. resourceName .. '] ^7'
+    local finalName = ('^3[%s] ^7'):format(resourceName)
 
-    local function printVersion(cur, late, status, updateLink)
-        print(finalName .. '^4Checking for update...^7')
-        print(finalName .. '^4' .. cur .. '^7')
-        print(finalName .. '^4' .. late .. '^7')
-        print(finalName .. status .. '^7')
-
-        if updateLink then
-            print(finalName .. '^3' .. updateLink)
+    local function printVersion(messages)
+        for _, msg in ipairs(messages) do
+            print(finalName .. msg)
         end
     end
 
     local function versionToNumber(version)
         local major, minor, patch = version:match("v?(%d+)%.(%d+)%.(%d+)")
-
-        major = tonumber(major) or 0
-        minor = tonumber(minor) or 0
-        patch = tonumber(patch) or 0
-        return major * 10000 + minor * 100 + patch
+        return (tonumber(major) or 0) * 10000 + (tonumber(minor) or 0) * 100 + (tonumber(patch) or 0)
     end
 
-    local cur = ''
-    local late = ''
-    local status = ''
-
-    local current = GetResourceMetadata(GetInvokingResource(), "version", 0)
-    current = current:match("v?(%d+%.%d+%.%d+)")
-    if not current then
-        printVersion('Current version: ^1Invalid version format',
-            'Latest version: ^1Not fetched due to incorrect current version format', '^1Error')
+    local currentVersion = GetResourceMetadata(GetInvokingResource(), "version", 0):match("v?(%d+%.%d+%.%d+)")
+    if not currentVersion then
+        printVersion({
+            '^4Checking for update...^7',
+            '^1Current version: Invalid version format',
+            '^1Latest version: Not fetched due to incorrect current version format',
+            '^1Error'
+        })
         return
     end
-    cur = "Current version: " .. current
 
-    PerformHttpRequest(('https://api.github.com/repos/%s/releases/latest'):format(githubRepo),
-        function(statusCode, response)
-            if statusCode ~= 200 then
-                printVersion(cur, 'Latest version: ^1Failed to fetch', '^1' .. statusCode)
-                return
-            end
+    PerformHttpRequest(('https://api.github.com/repos/%s/releases/latest'):format(githubRepo), function(statusCode, response)
+        if statusCode ~= 200 then
+            printVersion({
+                '^4Checking for update...^7',
+                ('Current version: %s'):format(currentVersion),
+                '^1Latest version: Failed to fetch',
+                ('^1Status Code: %s'):format(statusCode)
+            })
+            return
+        end
 
-            response = json.decode(response)
-            if not response or not response.tag_name then
-                printVersion(cur, 'Latest version: ^1Failed to parse response', '^1Error')
-                return
-            end
+        local jsonResponse = jsonDecode(response)
+        if not jsonResponse or not jsonResponse.tag_name then
+            printVersion({
+                '^4Checking for update...^7',
+                ('Current version: %s'):format(currentVersion),
+                '^1Latest version: Failed to parse response',
+                '^1Error'
+            })
+            return
+        end
 
-            local latestVersion = response.tag_name:match("v?(%d+%.%d+%.%d+)")
-            if not latestVersion then
-                printVersion(cur, 'Latest version: ^1Invalid version format', '^1Error')
-                return
-            end
+        local latestVersion = jsonResponse.tag_name:match("v?(%d+%.%d+%.%d+)")
+        if not latestVersion then
+            printVersion({
+                '^4Checking for update...^7',
+                ('Current version: %s'):format(currentVersion),
+                '^1Latest version: Invalid version format',
+                '^1Error'
+            })
+            return
+        end
 
-            late = "Latest version: " .. latestVersion
+        local currentVersionNumber = versionToNumber(currentVersion)
+        local latestVersionNumber = versionToNumber(latestVersion)
+        local statusMessage = '^2' .. resourceName .. ' is up to date!'
+        local outdated = latestVersionNumber > currentVersionNumber
 
-            local currentVersionNumber = versionToNumber(current)
-            local newToCheckNumber = versionToNumber(latestVersion)
+        if latestVersionNumber < currentVersionNumber then
+            statusMessage = '^3' .. resourceName .. ' version is from the future!'
+        elseif outdated then
+            statusMessage = '^1' .. resourceName .. ' version is outdated. Please update.'
+        end
 
-            local outdated = false
-
-            if newToCheckNumber < currentVersionNumber then
-                status = "^3" .. resourceName .. " version is from the future!"
-            elseif newToCheckNumber > currentVersionNumber then
-                outdated = true
-                status = "^1" .. resourceName .. " version is outdated. Please update."
-            elseif newToCheckNumber == currentVersionNumber then
-                status = "^2" .. resourceName .. " is up to date!"
-            end
-
-            if outdated then
-                printVersion(cur, late, status, response.html_url)
-            else
-                printVersion(cur, late, status)
-            end
-        end)
+        printVersion({
+            '^4Checking for update...^7',
+            ('Current version: %s'):format(currentVersion),
+            ('Latest version: %s'):format(latestVersion),
+            statusMessage,
+            outdated and ('^3Update here: %s'):format(jsonResponse.html_url) or nil
+        })
+    end)
 end)

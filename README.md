@@ -27,6 +27,7 @@ Feel free to contribute to the docs.
 - [IsInInterior](#isininterior)
 - [GetStreetName](#getstreetname)
 - [IsVehicleEmpty](#isvehicleempty)
+- [Notify](#notify)
 
 ##### Server
 - [VersionCheck](#versioncheck)
@@ -367,6 +368,27 @@ Returns true or false depending on if the vehicle provided is empty
 ```lua
 local isVehEmpty = exports['FS-Lib']:IsVehicleEmpty(veh)
 print(tostring(isVehEmpty))
+```
+
+---
+
+### Notify
+
+Sends a toast notification to the player
+
+#### Parameters:
+
+- `message`: The message you want to show to the player
+
+#### Optional Parameters:
+
+- `duration`: The duration you want the message to be shown for in seconds (if not provided it will be default 5 seconds)
+- `type`: The type can be either 'success' or 'warn' or 'error' anything else provided will just default to the info type
+
+#### Example:
+
+```lua
+exports['FS-Lib']:Notify('This is a test message', 5, 'warn')
 ```
 
 ---

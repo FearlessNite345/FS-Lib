@@ -21,14 +21,14 @@ exports('GetClosestObject', function(maxDistance)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local objPool = GetGamePool('CObject')
     local closestObj, closestDist, closestCoords = nil, 9999, nil
 
     for i = 1, #objPool do
         local obj = objPool[i]
         local objCoords = GetEntityCoords(obj, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - objCoords)
+        local dist = #(playerCoords - objCoords)
 
         if dist <= maxDistance and dist < closestDist then
             closestObj, closestDist, closestCoords = obj, dist, objCoords
@@ -49,14 +49,14 @@ exports('GetClosestPed', function(maxDistance, searchType)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local pedPool = GetGamePool('CPed')
     local closestPed, closestDist, closestCoords = nil, 9999, nil
 
     for i = 1, #pedPool do
         local ped = pedPool[i]
         local pedCoords = GetEntityCoords(ped, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - pedCoords)
+        local dist = #(playerCoords - pedCoords)
 
         local isPlayer = IsPedAPlayer(ped)
 
@@ -76,14 +76,14 @@ exports('GetClosestVehicle', function(maxDistance)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local vehPool = GetGamePool('CVehicle')
     local closestVeh, closestDist, closestCoords = nil, 9999, nil
 
     for i = 1, #vehPool do
         local veh = vehPool[i]
         local vehCoords = GetEntityCoords(veh, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - vehCoords)
+        local dist = #(playerCoords - vehCoords)
 
         if dist <= maxDistance and dist < closestDist then
             closestVeh, closestDist, closestCoords = veh, dist, vehCoords
@@ -99,14 +99,14 @@ exports('GetNearbyObjects', function(maxDistance)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local objPool = GetGamePool('CObject')
     local objects = {}
 
     for i = 1, #objPool do
         local obj = objPool[i]
         local objCoords = GetEntityCoords(obj, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - objCoords)
+        local dist = #(playerCoords - objCoords)
 
         if dist <= maxDistance then
             table.insert(objects, { object = obj, dist = dist, objCoords = objCoords })
@@ -125,14 +125,14 @@ exports('GetNearbyPeds', function(maxDistance, searchType)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local pedPool = GetGamePool('CPed')
     local peds = {}
 
     for i = 1, #pedPool do
         local ped = pedPool[i]
         local pedCoords = GetEntityCoords(ped, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - pedCoords)
+        local dist = #(playerCoords - pedCoords)
 
         local isPlayer = IsPedAPlayer(ped)
 
@@ -152,14 +152,14 @@ exports('GetNearbyVehicles', function(maxDistance)
         return
     end
 
-    -- Rewrite
+    local playerCoords = GetEntityCoords(PlayerPedId(), false)
     local vehPool = GetGamePool('CVehicle')
     local vehs = {}
 
     for i = 1, #vehPool do
         local veh = vehPool[i]
         local vehCoords = GetEntityCoords(veh, false)
-        local dist = #(GetEntityCoords(PlayerPedId(), false) - vehCoords)
+        local dist = #(playerCoords - vehCoords)
 
         if dist <= maxDistance then
             table.insert(vehs, { vehicle = veh, dist = dist, vehCoords = vehCoords })
@@ -420,4 +420,14 @@ exports('IsVehicleEmpty', function(vehicle)
     return true -- All seats are free, the vehicle is empty
 end)
 
+exports('Notify', function(message, duration, type)
+    duration *= 1000 or 5000
+    type = type or 'info'
 
+    SendNUIMessage({
+        action = 'FS-Lib:notify',
+        msg = message,
+        type = type,
+        duration = duration
+    })
+end)
