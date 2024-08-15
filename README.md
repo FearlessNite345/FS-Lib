@@ -383,12 +383,12 @@ Sends a toast notification to the player
 #### Optional Parameters:
 
 - `duration`: The duration you want the message to be shown for in seconds (if not provided it will be default 5 seconds)
-- `type`: The type can be either 'success' or 'warn' or 'error' anything else provided will just default to the info type
+- `type`: The type can be either 'success' or 'warn' or 'error' or 'police' anything else provided will just default to the info type
 
 #### Example:
 
 ```lua
-exports['FS-Lib']:Notify('This is a test message', 5, 'warn')
+exports['FS-Lib']:Notify('This is a test message', 5, 'police')
 ```
 
 ---
