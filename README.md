@@ -27,7 +27,7 @@ Feel free to contribute to the docs.
 - [IsInInterior](#isininterior)
 - [GetStreetName](#getstreetname)
 - [IsVehicleEmpty](#isvehicleempty)
-- [Notify](#notify)
+- [Notify](#notify-coming-in-v140)
 
 ##### Server
 - [VersionCheck](#versioncheck)
