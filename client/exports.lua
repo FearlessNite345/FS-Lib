@@ -93,6 +93,45 @@ exports('GetClosestVehicle', function(maxDistance)
     return closestVeh, closestDist, closestCoords
 end)
 
+exports('GetClosestTrailerToHitch', function(maxDistance)
+    if not maxDistance then
+        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestTrailer is nil', false, false)
+        return nil, nil, nil
+    end
+
+    local playerPed = PlayerPedId()
+    local playerVehicle = GetVehiclePedIsIn(playerPed, false)
+
+    if not playerVehicle or playerVehicle == 0 then
+        LogMessage(GetInvokingResource(), 'Player is not in a vehicle', false, false)
+        return nil, nil, nil
+    end
+
+    local femaleCoords = GetEntityBonePosition_2(playerVehicle, GetEntityBoneIndexByName(playerVehicle, 'attach_female'))
+    local nearest = nil
+    local dist = maxDistance
+
+    if not IsVehicleAttachedToTrailer(playerVehicle) then
+        for _, veh in pairs(GetGamePool("CVehicle")) do
+            if veh ~= playerVehicle then
+                if GetEntityBoneIndexByName(veh, 'attach_male') ~= -1 then
+                    local newDist = #(femaleCoords - GetEntityBonePosition_2(veh, GetEntityBoneIndexByName(veh, 'attach_male')))
+                    if newDist < dist then
+                        dist = newDist
+                        nearest = veh
+                    end
+                end
+            end
+        end
+    end
+
+    if dist < 1.2 then
+        return nearest, dist
+    end
+
+    return nil, nil
+end)
+
 exports('GetNearbyObjects', function(maxDistance)
     if not maxDistance then
         LogMessage(GetInvokingResource(), 'maxDistance param in GetObjectsWithinDist is nil', false, false)
@@ -222,7 +261,7 @@ local function CreatePreviewObject(object, position, rotation)
         Citizen.Wait(0)
     end
 
-    local previewObject = CreateObject(object, position.x, position.y, position.z, true, true, false)
+    local previewObject = CreateObject(object, position.x, position.y, position.z, false, true, false)
     SetEntityRotation(previewObject, rotation.x, rotation.y, rotation.z, 2, true)
     SetEntityAlpha(previewObject, 100, false)
     SetEntityCollision(previewObject, false, false)

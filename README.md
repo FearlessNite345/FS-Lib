@@ -13,9 +13,10 @@ Feel free to contribute to the docs.
 
 ##### Client
 - [GetKeyString](#getkeystringfromkeyid)
-- [GetClosestObject](#getclosestobjectwithindist)
-- [GetClosestPed](#getclosestpedwithindist)
-- [GetClosestVehicle](#getclosestvehiclewithindist)
+- [GetClosestObject](#getclosestobject)
+- [GetClosestPed](#getclosestped)
+- [GetClosestVehicle](#getclosestvehicle)
+- [GetClosestTrailerToHitch](#getclosesttrailertohitch)
 - [GetNearbyObjects](#getobjectswithindist)
 - [GetNearbyPeds](#getpedswithindist)
 - [GetNearbyVehicles](#getvehicleswithindist)
@@ -118,6 +119,24 @@ Finds the closest vehicle within a specified distance from the player's current 
 
 ```lua
 local closestVeh, closestDist, closestCoords = exports['FS-Lib']:GetClosestVehicle(10.0)
+```
+
+### GetClosestTrailerToHitch
+
+Finds the closest trailer within a specified distance from the player's current location.
+
+#### Parameters:
+
+- `maxDistance`: The maximum distance within which to search for trailers (number).
+
+#### Returns:
+
+- `closestTrailer`: The trailer it found
+
+#### Example:
+
+```lua
+local closestTrailer = exports['FS-Lib']:GetClosestTrailerToHitch(10.0)
 ```
 
 ### GetNearbyObjects
