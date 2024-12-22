@@ -23,7 +23,6 @@ Feel free to contribute to the docs.
 - [SetupModel](#setupmodel)
 - [DrawText3D](#drawtext3d)
 - [DrawText2D](#drawtext2d)
-- [PlaceModel](#placemodel)
 - [HeadingToCardinal](#headingtocardinal)
 - [IsInInterior](#isininterior)
 - [GetStreetName](#getstreetname)
@@ -269,47 +268,6 @@ Draws 2D text at specified screen coordinates.
 
 ```lua
 exports['FS-Lib']:DrawText2D(0.5, 0.8, "2D Text", 0.6, true)
-```
-
----
-
-### PlaceObject
-
-Places a object at a specified position with keyboard control.
-
-#### Parameters:
-
-- `model`: The model to place (number or string).
-- `position`: The position to place the model (vector3).
-- `rotation`: The rotation of the model (vector3).
-
-#### Optional Parameters:
-
-- `callback`: Function to call after placement (function).
-
-#### Callback Params
-
-- `Success`: will be true if the model was placed otherwise false
-
-###### Only a param if success is TRUE otherwise they will be nil
-
-- `Object`: The model that was actually placed
-- `Current Position`: The position the model was placed at
-- `Current Rotation`: The roation the model was placed with
-
-#### Example:
-
-```lua
-exports['FS-Lib']:PlaceModel(123456, vector3(100.0, 200.0, 300.0), vector3(0.0, 0.0, 90.0), function(Success, Object, CurrentPos, CurrentRot)
-    if success then
-        print("Object placed successfully.")
-        print("Object:" .. Object)
-        print("Position:" .. CurrentPos)
-        print("Rotation:" .. CurrentRot)
-    else
-        print("Object placement failed.")
-    end
-end)
 ```
 
 ---
