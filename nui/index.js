@@ -2,7 +2,6 @@ const toastContainer = document.getElementById('toast-container');
 const showToastButton = document.getElementById('showToast');
 
 function createToast(message, type = 'info', duration = 5000) {
-  console.log('Creating toast');
 
   const iconColor =
     type === 'success'
@@ -96,7 +95,6 @@ window.addEventListener('message', function (data) {
   data = data.data;
 
   if (data.action === 'FS-Lib:notify') {
-    console.log('Trying to create toast');
     createToast(data.msg, data.type, data.duration);
   }
 });
