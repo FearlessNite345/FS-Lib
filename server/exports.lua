@@ -2,7 +2,6 @@
 local GetResourceMetadata = GetResourceMetadata
 local PerformHttpRequest = PerformHttpRequest
 local GetInvokingResource = GetInvokingResource
-local jsonDecode = json.decode
 
 exports('VersionCheck', function(resourceName, githubRepo)
     if not resourceName or not githubRepo then
@@ -34,7 +33,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
         return
     end
 
-    PerformHttpRequest(('https://api.github.com/repos/%s/releases/latest'):format(githubRepo), function(statusCode, response)
+    PerformHttpRequest(('https://raw.githubusercontent.com/%s/refs/heads/main/version.txt'):format(githubRepo), function(statusCode, response)
         if statusCode ~= 200 then
             printVersion({
                 '^4Checking for update...^7',
@@ -45,18 +44,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
             return
         end
 
-        local jsonResponse = jsonDecode(response)
-        if not jsonResponse or not jsonResponse.tag_name then
-            printVersion({
-                '^4Checking for update...^7',
-                ('Current version: %s'):format(currentVersion),
-                '^1Latest version: Failed to parse response',
-                '^1Error'
-            })
-            return
-        end
-
-        local latestVersion = jsonResponse.tag_name:match("v?(%d+%.%d+%.%d+)")
+        local latestVersion = response:match("v?(%d+%.%d+%.%d+)")
         if not latestVersion then
             printVersion({
                 '^4Checking for update...^7',
@@ -83,7 +71,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
             ('Current version: %s'):format(currentVersion),
             ('Latest version: %s'):format(latestVersion),
             statusMessage,
-            outdated and ('^3Update here: %s'):format(jsonResponse.html_url) or nil
+            outdated and ('^3Update here: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or nil
         })
     end)
 end)
