@@ -5,7 +5,8 @@ local GetInvokingResource = GetInvokingResource
 
 exports('VersionCheck', function(resourceName, githubRepo)
     if not resourceName or not githubRepo then
-        LogMessage(GetInvokingResource(), resourceName and 'githubRepo param in VersionCheck is nil' or 'resourceName param in VersionCheck is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(),
+            resourceName and 'githubRepo param in VersionCheck is nil' or 'resourceName param in VersionCheck is nil')
         return
     end
 
@@ -13,7 +14,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
 
     local function printVersion(messages)
         for _, msg in ipairs(messages) do
-            print(finalName .. msg)
+            print(finalName .. msg .. '^7')
         end
     end
 
@@ -25,7 +26,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
     local currentVersion = GetResourceMetadata(GetInvokingResource(), "version", 0):match("v?(%d+%.%d+%.%d+)")
     if not currentVersion then
         printVersion({
-            '^4Checking for update...^7',
+            '^4Checking for update...',
             '^1Current version: Invalid version format',
             '^1Latest version: Not fetched due to incorrect current version format',
             '^1Error'
@@ -33,45 +34,63 @@ exports('VersionCheck', function(resourceName, githubRepo)
         return
     end
 
-    PerformHttpRequest(('https://raw.githubusercontent.com/%s/refs/heads/main/version.txt'):format(githubRepo), function(statusCode, response)
-        if statusCode ~= 200 then
+    PerformHttpRequest(('https://raw.githubusercontent.com/%s/refs/heads/main/version.txt'):format(githubRepo),
+        function(statusCode, response)
+            if statusCode ~= 200 then
+                printVersion({
+                    '^4Checking for update...',
+                    ('Current version: %s'):format(currentVersion),
+                    '^1Latest version: Failed to fetch',
+                    ('^1Status Code: %s'):format(statusCode)
+                })
+                return
+            end
+
+            local latestVersion = response:match("v?(%d+%.%d+%.%d+)")
+            if not latestVersion then
+                printVersion({
+                    '^4Checking for update...',
+                    ('Current version: %s'):format(currentVersion),
+                    '^1Latest version: Invalid version format',
+                    '^1Error'
+                })
+                return
+            end
+
+            local currentVersionNumber = versionToNumber(currentVersion)
+            local latestVersionNumber = versionToNumber(latestVersion)
+            local statusMessage = '^2' .. resourceName .. ' is up to date!'
+            local outdated = latestVersionNumber > currentVersionNumber
+
+            if latestVersionNumber < currentVersionNumber then
+                statusMessage = '^3' .. resourceName .. ' version is from the future!'
+            elseif outdated then
+                statusMessage = '^1' .. resourceName .. ' version is outdated. Please update.'
+            end
+
             printVersion({
-                '^4Checking for update...^7',
+                '^4Checking for update...',
                 ('Current version: %s'):format(currentVersion),
-                '^1Latest version: Failed to fetch',
-                ('^1Status Code: %s'):format(statusCode)
+                ('Latest version: %s'):format(latestVersion),
+                statusMessage,
+                outdated and ('^3Update here: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
+                nil
             })
-            return
-        end
+        end)
+end)
 
-        local latestVersion = response:match("v?(%d+%.%d+%.%d+)")
-        if not latestVersion then
-            printVersion({
-                '^4Checking for update...^7',
-                ('Current version: %s'):format(currentVersion),
-                '^1Latest version: Invalid version format',
-                '^1Error'
-            })
-            return
-        end
+exports('LogMessage', function(invokingResource, message, logLevel)
+    local logPrefixes = {
+        [LogLevel["INFO"]] = "^2[INFO]",
+        [LogLevel["WARN"]] = "^3[WARN]",
+        [LogLevel["ERROR"]] = "^1[ERROR]",
+    }
 
-        local currentVersionNumber = versionToNumber(currentVersion)
-        local latestVersionNumber = versionToNumber(latestVersion)
-        local statusMessage = '^2' .. resourceName .. ' is up to date!'
-        local outdated = latestVersionNumber > currentVersionNumber
+    logLevel = logLevel or LogLevel.ERROR
 
-        if latestVersionNumber < currentVersionNumber then
-            statusMessage = '^3' .. resourceName .. ' version is from the future!'
-        elseif outdated then
-            statusMessage = '^1' .. resourceName .. ' version is outdated. Please update.'
-        end
+    local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
 
-        printVersion({
-            '^4Checking for update...^7',
-            ('Current version: %s'):format(currentVersion),
-            ('Latest version: %s'):format(latestVersion),
-            statusMessage,
-            outdated and ('^3Update here: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or nil
-        })
-    end)
+    local formattedMessage = string.format("%s [FS-Lib] [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
+
+    print(formattedMessage)
 end)

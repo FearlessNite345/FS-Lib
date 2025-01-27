@@ -7,7 +7,7 @@ local ROTATE_SPEED = 0.7
 
 exports('GetKeyString', function(keyID)
     if not keyID then
-        LogMessage(GetInvokingResource(), 'keyID param in GetKeyStringFromKeyID is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'keyID param in GetKeyStringFromKeyID is nil')
         return
     end
 
@@ -17,7 +17,7 @@ end)
 -- Get the closest object within a certain distance
 exports('GetClosestObject', function(maxDistance)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestObjectWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestObjectWithinDist is nil')
         return
     end
 
@@ -42,10 +42,10 @@ end)
 -- Specify searchType as "players" to find only real players or "npcs" to find only NPCs
 exports('GetClosestPed', function(maxDistance, searchType)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestPedWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestPedWithinDist is nil')
         return
     elseif not searchType then
-        LogMessage(GetInvokingResource(), 'searchType param in GetClosestPedWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'searchType param in GetClosestPedWithinDist is nil')
         return
     end
 
@@ -72,7 +72,7 @@ end)
 
 exports('GetClosestVehicle', function(maxDistance)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestVehicleWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestVehicleWithinDist is nil')
         return
     end
 
@@ -95,7 +95,7 @@ end)
 
 exports('GetClosestTrailerToHitch', function(maxDistance)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestTrailer is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetClosestTrailer is nil')
         return nil, nil, nil
     end
 
@@ -103,7 +103,7 @@ exports('GetClosestTrailerToHitch', function(maxDistance)
     local playerVehicle = GetVehiclePedIsIn(playerPed, false)
 
     if not playerVehicle or playerVehicle == 0 then
-        LogMessage(GetInvokingResource(), 'Player is not in a vehicle', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'Player is not in a vehicle')
         return nil, nil, nil
     end
 
@@ -134,7 +134,7 @@ end)
 
 exports('GetNearbyObjects', function(maxDistance)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetObjectsWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetObjectsWithinDist is nil')
         return
     end
 
@@ -157,10 +157,10 @@ end)
 
 exports('GetNearbyPeds', function(maxDistance, searchType)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil')
         return
     elseif not searchType then
-        LogMessage(GetInvokingResource(), 'searchType param in GetPedsWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'searchType param in GetPedsWithinDist is nil')
         return
     end
 
@@ -187,7 +187,7 @@ end)
 
 exports('GetNearbyVehicles', function(maxDistance)
     if not maxDistance then
-        LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil')
         return
     end
 
@@ -211,7 +211,7 @@ end)
 -- Load and set up a model
 exports('SetupModel', function(object)
     if not object then
-        LogMessage(GetInvokingResource(), 'object param in SetupModel is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'object param in SetupModel is nil')
         return
     end
 
@@ -257,7 +257,7 @@ end)
 -- Convert heading to cardinal direction
 exports('HeadingToCardinal', function(heading)
     if not heading then
-        LogMessage(GetInvokingResource(), 'heading param in HeadingToCardinal is nil', false, false)
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'heading param in HeadingToCardinal is nil')
         return
     end
 
@@ -309,4 +309,20 @@ exports('Notify', function(message, duration, type)
         type = type,
         duration = duration
     })
+end)
+
+exports('LogMessage', function(invokingResource, message, logLevel)
+    local logPrefixes = {
+        [LogLevel["INFO"]] = "^2[INFO]",
+        [LogLevel["WARN"]] = "^3[WARN]",
+        [LogLevel["ERROR"]] = "^1[ERROR]",
+    }
+
+    logLevel = logLevel or LogLevel.ERROR
+
+    local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
+
+    local formattedMessage = string.format("%s [FS-Lib] [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
+
+    print(formattedMessage)
 end)
