@@ -1,9 +1,8 @@
--- FS-Lib: Utility Functions for FiveM
-
--- Constants
-local MOVE_SPEED = 0.01
-local VERTICAL_SPEED = 0.01
-local ROTATE_SPEED = 0.7
+LogLevel = {
+    ["INFO"] = "INFO",
+    ["WARN"] = "WARN",
+    ["ERROR"] = "ERROR"
+}
 
 exports('GetKeyString', function(keyID)
     if not keyID then
@@ -132,82 +131,6 @@ exports('GetClosestTrailerToHitch', function(maxDistance)
     return nil, nil
 end)
 
-exports('GetNearbyObjects', function(maxDistance)
-    if not maxDistance then
-        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetObjectsWithinDist is nil')
-        return
-    end
-
-    local playerCoords = GetEntityCoords(PlayerPedId(), false)
-    local objPool = GetGamePool('CObject')
-    local objects = {}
-
-    for i = 1, #objPool do
-        local obj = objPool[i]
-        local objCoords = GetEntityCoords(obj, false)
-        local dist = #(playerCoords - objCoords)
-
-        if dist <= maxDistance then
-            table.insert(objects, { object = obj, dist = dist, objCoords = objCoords })
-        end
-    end
-
-    return objects
-end)
-
-exports('GetNearbyPeds', function(maxDistance, searchType)
-    if not maxDistance then
-        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil')
-        return
-    elseif not searchType then
-        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'searchType param in GetPedsWithinDist is nil')
-        return
-    end
-
-    local playerCoords = GetEntityCoords(PlayerPedId(), false)
-    local pedPool = GetGamePool('CPed')
-    local peds = {}
-
-    for i = 1, #pedPool do
-        local ped = pedPool[i]
-        local pedCoords = GetEntityCoords(ped, false)
-        local dist = #(playerCoords - pedCoords)
-
-        local isPlayer = IsPedAPlayer(ped)
-
-        if dist <= maxDistance then
-            if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
-                table.insert(peds, { ped = ped, dist = dist, pedCoords = pedCoords })
-            end
-        end
-    end
-
-    return peds
-end)
-
-exports('GetNearbyVehicles', function(maxDistance)
-    if not maxDistance then
-        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in GetPedsWithinDist is nil')
-        return
-    end
-
-    local playerCoords = GetEntityCoords(PlayerPedId(), false)
-    local vehPool = GetGamePool('CVehicle')
-    local vehs = {}
-
-    for i = 1, #vehPool do
-        local veh = vehPool[i]
-        local vehCoords = GetEntityCoords(veh, false)
-        local dist = #(playerCoords - vehCoords)
-
-        if dist <= maxDistance then
-            table.insert(vehs, { vehicle = veh, dist = dist, vehCoords = vehCoords })
-        end
-    end
-
-    return vehs
-end)
-
 -- Load and set up a model
 exports('SetupModel', function(object)
     if not object then
@@ -282,32 +205,29 @@ exports('GetStreetName', function(x, y, z)
     return GetStreetNameFromHashKey(streetHash)
 end)
 
-exports('IsVehicleEmpty', function(vehicle)
-    -- Ensure the vehicle is valid
-    if not DoesEntityExist(vehicle) then return false end
+exports('Notify', function(title, message, duration, type)
+    type = type or nil
 
-    -- Get the number of seats in the vehicle
-    local maxSeats = GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))
+    local validTypes = {
+        info = true,
+        success = true,
+        warn = true,
+        error = true
+    }
 
-    -- Check each seat to see if it's occupied
-    for seat = -1, maxSeats - 2 do
-        if not IsVehicleSeatFree(vehicle, seat) then
-            return false -- If any seat is occupied, the vehicle is not empty
-        end
+    if not validTypes[type] then
+        exports['FS-Lib']:LogMessage('FS-Lib', string.format("Invalid notification type: %s", tostring(type)), LogLevel.ERROR)
+        return
     end
-
-    return true -- All seats are free, the vehicle is empty
-end)
-
-exports('Notify', function(message, duration, type)
-    duration *= 1000 or 5000
-    type = type or 'info'
 
     SendNUIMessage({
         action = 'FS-Lib:notify',
-        msg = message,
-        type = type,
-        duration = duration
+        data = {
+            title = title,
+            msg = message,
+            duration = duration,
+            type = type
+        }
     })
 end)
 
@@ -322,7 +242,7 @@ exports('LogMessage', function(invokingResource, message, logLevel)
 
     local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
 
-    local formattedMessage = string.format("%s [FS-Lib] [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
+    local formattedMessage = string.format("%s [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
 
     print(formattedMessage)
 end)

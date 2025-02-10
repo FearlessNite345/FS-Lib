@@ -1,7 +1,8 @@
--- Localize functions
-local GetResourceMetadata = GetResourceMetadata
-local PerformHttpRequest = PerformHttpRequest
-local GetInvokingResource = GetInvokingResource
+LogLevel = {
+    ["INFO"] = "INFO",
+    ["WARN"] = "WARN",
+    ["ERROR"] = "ERROR"
+}
 
 exports('VersionCheck', function(resourceName, githubRepo)
     if not resourceName or not githubRepo then
@@ -90,7 +91,10 @@ exports('LogMessage', function(invokingResource, message, logLevel)
 
     local logPrefix = logPrefixes[logLevel] or logPrefixes[LogLevel.ERROR]
 
-    local formattedMessage = string.format("%s [FS-Lib] [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
+    local formattedMessage = string.format("%s [Invoking Resource: %s] %s", logPrefix, invokingResource, message)
 
     print(formattedMessage)
 end)
+
+exports['FS-Lib']:VersionCheck('FS-Lib', 'fearlessnite345/fs-lib')
+
