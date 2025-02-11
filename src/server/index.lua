@@ -1,3 +1,5 @@
+exports['FS-Lib']:VersionCheck('FS-Lib', 'fearlessnite345/fs-lib')
+
 LogLevel = {
     ["INFO"] = "INFO",
     ["WARN"] = "WARN",
@@ -95,6 +97,3 @@ exports('LogMessage', function(invokingResource, message, logLevel)
 
     print(formattedMessage)
 end)
-
-exports['FS-Lib']:VersionCheck('FS-Lib', 'fearlessnite345/fs-lib')
-
