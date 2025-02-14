@@ -7,32 +7,7 @@ export default defineConfig({
 	watch: {
 		server: ["src/server/**/*.{lua,ts,js}"], // Files specific to the server-side codebase
 		client: ["src/client/**/*.{lua,ts,js}"], // Files specific to the client-side codebase
-		all: ["src/data/**/*", "src/stream/**/*"], // Shared files, including assets and data
 	},
-
-	// Define files or folders to copy from the project source to the output destination.
-	// Each entry specifies a source path (from) and a destination path (to), relative to the project and output roots.
-	//! DO NOT USE A LEADING SLASH — IT WILL BREAK THE BUILD!
-	copy: [
-		{
-			from: "src/stream/**/*", // Directory containing files for FiveM's streaming functionality (e.g., models, textures)
-			to: "stream", // Target location in the root of the output directory
-		},
-		{
-			from: "src/data/**/*", // Directory for configuration or supplemental data files
-			to: "data", // Target location in the root of the output directory
-		},
-		/*
-        {
-            * Single File Example
-
-            from: "src/nested/single-file.txt", // Specify the exact file to copy
-            to: "into/any/path/from/resource/root/filename.txt", // Target path including filename
-
-            ? Note: If you change the filename in the "to" path, it will rename the file after moving it.
-        },
-        */
-	],
 
 	// Skips moving files defined in the "copy" option during watch mode.
 	// This helps speed up build times in development, especially for large files

@@ -108,7 +108,7 @@ exports('GetClosestTrailerToHitch', function(maxDistance)
 
     local femaleCoords = GetEntityBonePosition_2(playerVehicle, GetEntityBoneIndexByName(playerVehicle, 'attach_female'))
     local nearest = nil
-    local dist = maxDistance
+    local dist = 9999
 
     if not IsVehicleAttachedToTrailer(playerVehicle) then
         for _, veh in pairs(GetGamePool("CVehicle")) do
@@ -124,7 +124,7 @@ exports('GetClosestTrailerToHitch', function(maxDistance)
         end
     end
 
-    if dist < 1.2 then
+    if dist < maxDistance then
         return nearest, dist
     end
 
