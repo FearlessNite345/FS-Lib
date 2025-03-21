@@ -12,5 +12,11 @@
 	},
 	"devDependencies": {
 		"@whitigol/fivem-compiler": "latest"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"javascript-obfuscator"
+		]
 	}
 }
