@@ -27,10 +27,9 @@ exports('VersionCheck', function(resourceName, githubRepo)
     local currentVersion = GetResourceMetadata(GetInvokingResource(), "version", 0):match("v?(%d+%.%d+%.%d+)")
     if not currentVersion then
         printVersion({
-            '^4Checking for update...',
-            '^1Current version: Invalid version format',
-            '^1Latest version: Not fetched due to incorrect current version format',
-            '^1Error'
+            '^1Current version: Invalid format',
+            '^1Latest version: Skipped (invalid current version)',
+            '^1Status: Error'
         })
         return
     end
@@ -39,10 +38,9 @@ exports('VersionCheck', function(resourceName, githubRepo)
         function(statusCode, response)
             if statusCode ~= 200 then
                 printVersion({
-                    '^4Checking for update...',
                     ('Current version: %s'):format(currentVersion),
                     '^1Latest version: Failed to fetch',
-                    ('^1Status Code: %s'):format(statusCode)
+                    ('^1Status code: %s'):format(statusCode)
                 })
                 return
             end
@@ -50,10 +48,9 @@ exports('VersionCheck', function(resourceName, githubRepo)
             local latestVersion = response:match("v?(%d+%.%d+%.%d+)")
             if not latestVersion then
                 printVersion({
-                    '^4Checking for update...',
                     ('Current version: %s'):format(currentVersion),
-                    '^1Latest version: Invalid version format',
-                    '^1Error'
+                    '^1Latest version: Invalid format',
+                    '^1Status: Error'
                 })
                 return
             end
@@ -70,11 +67,10 @@ exports('VersionCheck', function(resourceName, githubRepo)
             end
 
             printVersion({
-                '^4Checking for update...',
                 ('Current version: %s'):format(currentVersion),
                 ('Latest version: %s'):format(latestVersion),
                 statusMessage,
-                outdated and ('^3Update here: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
+                outdated and ('^3Update available: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
                 nil
             })
         end)
