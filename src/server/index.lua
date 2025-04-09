@@ -4,7 +4,11 @@ LogLevel = {
     ["ERROR"] = "ERROR"
 }
 
-exports('VersionCheck', function(resourceName, githubRepo)
+exports('VersionCheck', function(resourceName, githubRepo, downloadFromGithub)
+    if downloadFromGithub == nil then
+        downloadFromGithub = true
+    end
+
     if not resourceName or not githubRepo then
         exports['FS-Lib']:LogMessage(GetInvokingResource(),
             resourceName and 'githubRepo param in VersionCheck is nil' or 'resourceName param in VersionCheck is nil')
@@ -66,13 +70,24 @@ exports('VersionCheck', function(resourceName, githubRepo)
                 statusMessage = '^1' .. resourceName .. ' version is outdated. Please update.'
             end
 
-            printVersion({
-                ('Current version: %s'):format(currentVersion),
-                ('Latest version: %s'):format(latestVersion),
-                statusMessage,
-                outdated and ('^3Update available: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
-                nil
-            })
+            if downloadFromGithub == true then
+                printVersion({
+                    ('Current version: %s'):format(currentVersion),
+                    ('Latest version: %s'):format(latestVersion),
+                    statusMessage,
+                    outdated and
+                    ('^3Update available: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
+                    nil
+                })
+            elseif downloadFromGithub == false then
+                printVersion({
+                    ('Current version: %s'):format(currentVersion),
+                    ('Latest version: %s'):format(latestVersion),
+                    statusMessage,
+                    outdated and ('^3Update available: %s'):format('You can download it from https://portal.cfx.re/') or
+                    nil
+                })
+            end
         end)
 end)
 
