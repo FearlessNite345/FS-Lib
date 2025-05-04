@@ -10,7 +10,11 @@ exports('GetKeyString', function(keyID)
         return
     end
 
-    return Keys[keyID] or '(NONE)'
+    if not IsUsingKeyboard(0) then
+        return KeyboardKeys[keyID] or '(NONE)'
+    else
+        return ControllerKeys[keyID] or '(NONE)'
+    end
 end)
 
 -- Get the closest object within a certain distance
