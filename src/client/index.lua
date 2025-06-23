@@ -242,7 +242,7 @@ end)
 -- Simple wrapper around DrawMarker for world coordinates
 exports('DrawMarker3D', function(markerType, x, y, z, sx, sy, sz, r, g, b, a)
     markerType = markerType or 1
-    DrawMarker(markerType, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, sx or 1.0, sy or 1.0, sz or 1.0, r or 255, g or 255, b or 255, a or 255, false, false, 2, false, nil, nil, false)
+    DrawMarker(markerType, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, sx or 1.0, sy or 1.0, sz or 1.0, r or 255, g or 255, b or 255, a or 255, false, false, 2, false, '', '', false)
 end)
 
 exports('LogMessage', function(invokingResource, message, logLevel)
