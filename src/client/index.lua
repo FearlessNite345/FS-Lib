@@ -10,7 +10,11 @@ exports('GetKeyString', function(keyID)
         return
     end
 
-    return Keys[keyID] or '(NONE)'
+    if IsUsingKeyboard(0) then
+        return KeyboardKeys[keyID] or '(NONE)'
+    else
+        return ControllerKeys[keyID] or '(NONE)'
+    end
 end)
 
 -- Get the closest object within a certain distance
@@ -59,11 +63,15 @@ exports('GetClosestPed', function(maxDistance, searchType)
 
         local isPlayer = IsPedAPlayer(ped)
 
+        if ped == PlayerPedId() then goto continue end
+
         if dist <= maxDistance and dist < closestDist then
             if searchType == 'players' and isPlayer or searchType == 'npcs' and not isPlayer or searchType == 'both' then
                 closestPed, closestDist, closestCoords = ped, dist, pedCoords
             end
         end
+
+        ::continue::
     end
 
     return closestPed, closestDist, closestCoords
