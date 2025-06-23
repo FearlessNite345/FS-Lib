@@ -13,10 +13,50 @@ exports('VersionCheck', function(resourceName, githubRepo)
 
     local finalName = ('^3[%s] ^7'):format(resourceName)
 
+    local header = "^5--- Version Info ---"
+    local changelogHeader = '^5------------------- Changelog ------------------ '
+
     local function printVersion(messages)
         for _, msg in ipairs(messages) do
             print(finalName .. msg .. '^7')
         end
+    end
+
+    -- Read changelog lines for a specific version from CHANGELOG.md
+    local function getChangelog(version)
+        local files = { 'CHANGELOG.md', 'changelog.md' }
+
+        for _, fileName in ipairs(files) do
+            local fileData = LoadResourceFile(GetInvokingResource(), fileName)
+            if fileData then
+                local lines = {}
+                for line in fileData:gmatch('[^\r\n]+') do
+                    table.insert(lines, line)
+                end
+
+                local pattern = '^%s*#%s*Changelog%s+v?' .. version:gsub('%.', '%%.') .. '%s*$'
+                for i, line in ipairs(lines) do
+                    if line:lower():match(pattern:lower()) then
+                        local changes = {}
+                        for j = i + 1, #lines do
+                            local ln = lines[j]
+                            if ln:match('^%s*#%s*Changelog') then
+                                break
+                            end
+                            if ln:match('%S') then
+                                table.insert(changes, ln)
+                            end
+                        end
+                        if #changes > 0 then
+                            return changes
+                        end
+                        return nil
+                    end
+                end
+            end
+        end
+
+        return nil
     end
 
     -- Extracts numeric and pre-release versions
@@ -48,7 +88,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
     local currentVersion = GetResourceMetadata(GetInvokingResource(), "version", 0):match("v?(%d+%.%d+%.%d+.-?%w*)")
     if not currentVersion then
         printVersion({
-            '^4Checking for update...',
+            header,
             '^1Current version: Invalid version format',
             '^1Latest version: Not fetched due to incorrect current version format',
             '^1Error'
@@ -60,7 +100,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
         function(statusCode, response)
             if statusCode ~= 200 then
                 printVersion({
-                    '^4Checking for update...',
+                    header,
                     ('Current version: %s'):format(currentVersion),
                     '^1Latest version: Failed to fetch',
                     ('^1Status Code: %s'):format(statusCode)
@@ -71,7 +111,7 @@ exports('VersionCheck', function(resourceName, githubRepo)
             local latestVersion = response:match("v?(%d+%.%d+%.%d+.-?%w*)")
             if not latestVersion then
                 printVersion({
-                    '^4Checking for update...',
+                    header,
                     ('Current version: %s'):format(currentVersion),
                     '^1Latest version: Invalid version format',
                     '^1Error'
@@ -92,13 +132,23 @@ exports('VersionCheck', function(resourceName, githubRepo)
             end
 
             printVersion({
-                '^4Checking for update...',
+                header,
                 ('Current version: %s'):format(currentVersion),
                 ('Latest version: %s'):format(latestVersion),
                 statusMessage,
                 outdated and ('^3Update here: %s'):format('https://github.com/' .. githubRepo .. '/releases/latest') or
                 nil
             })
+
+            if outdated then
+                local changelog = getChangelog(latestVersion)
+                if changelog then
+                    printVersion({changelogHeader .. ('v%s'):format(latestVersion)})
+                    for _, line in ipairs(changelog) do
+                        print(finalName .. line .. '^7')
+                    end
+                end
+            end
         end)
 end)
 
