@@ -182,6 +182,29 @@ exports('VersionCheck', function(resourceName, githubRepo, downloadFromGithub)
     end)
 end)
 
+-- Get info about a vehicle entity
+exports('GetVehicleTypeInfo', function(vehicle)
+    if not vehicle or not DoesEntityExist(vehicle) then
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'vehicle param in GetVehicleTypeInfo is invalid')
+        return nil
+    end
+
+    local model = GetEntityModel(vehicle)
+
+    return {
+        class = GetVehicleClass(vehicle),
+        seatCount = GetVehicleModelNumberOfSeats(model),
+        isBoat = IsThisModelABoat(model),
+        isHeli = IsThisModelAHeli(model),
+        isPlane = IsThisModelAPlane(model),
+        isBike = IsThisModelABike(model),
+        isCar = IsThisModelACar(model),
+        isQuadbike = IsThisModelAQuadbike(model),
+        isBicycle = IsThisModelABicycle(model),
+        isTrain = IsThisModelATrain(model)
+    }
+end)
+
 exports('LogMessage', function(invokingResource, message, logLevel)
     local logPrefixes = {
         [LogLevel["INFO"]] = "^2[INFO]",
