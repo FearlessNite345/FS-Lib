@@ -213,32 +213,6 @@ exports('GetStreetName', function(x, y, z)
     return GetStreetNameFromHashKey(streetHash)
 end)
 
-exports('Notify', function(title, message, duration, type)
-    type = type or nil
-
-    local validTypes = {
-        info = true,
-        success = true,
-        warn = true,
-        error = true
-    }
-
-    if not validTypes[type] then
-        exports['FS-Lib']:LogMessage('FS-Lib', string.format("Invalid notification type: %s", tostring(type)), LogLevel.ERROR)
-        return
-    end
-
-    SendNUIMessage({
-        action = 'FS-Lib:notify',
-        data = {
-            title = title,
-            msg = message,
-            duration = duration,
-            type = type
-        }
-    })
-end)
-
 exports('LogMessage', function(invokingResource, message, logLevel)
     local logPrefixes = {
         [LogLevel["INFO"]] = "^2[INFO]",
