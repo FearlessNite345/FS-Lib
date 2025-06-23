@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'FearlessStudios'
 description 'FS-Lib by FearlessStudios'
-version '1.4.5'
+version '1.4.6'
 
 client_script 'dist/client/**/*.lua'
 server_script 'dist/server/**/*.lua'
