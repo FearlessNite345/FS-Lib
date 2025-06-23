@@ -213,6 +213,38 @@ exports('GetStreetName', function(x, y, z)
     return GetStreetNameFromHashKey(streetHash)
 end)
 
+-- Return the current zone name the player is in
+exports('GetCurrentZone', function()
+    local coords = GetEntityCoords(PlayerPedId())
+    local zoneHash = GetNameOfZone(coords.x, coords.y, coords.z)
+    return GetLabelText(zoneHash)
+end)
+
+-- Check if a target entity is within a certain distance
+-- If fromEntity is omitted the player's ped is used
+exports('IsEntityWithinDistance', function(targetEntity, maxDistance, fromEntity)
+    if not targetEntity or not DoesEntityExist(targetEntity) then
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'targetEntity param in IsEntityWithinDistance is invalid')
+        return false, nil
+    elseif not maxDistance then
+        exports['FS-Lib']:LogMessage(GetInvokingResource(), 'maxDistance param in IsEntityWithinDistance is nil')
+        return false, nil
+    end
+
+    fromEntity = fromEntity or PlayerPedId()
+    local fromCoords = GetEntityCoords(fromEntity)
+    local targetCoords = GetEntityCoords(targetEntity)
+    local dist = #(fromCoords - targetCoords)
+
+    return dist <= maxDistance, dist
+end)
+
+-- Simple wrapper around DrawMarker for world coordinates
+exports('DrawMarker3D', function(markerType, x, y, z, sx, sy, sz, r, g, b, a)
+    markerType = markerType or 1
+    DrawMarker(markerType, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, sx or 1.0, sy or 1.0, sz or 1.0, r or 255, g or 255, b or 255, a or 255, false, false, 2, false, nil, nil, false)
+end)
+
 exports('LogMessage', function(invokingResource, message, logLevel)
     local logPrefixes = {
         [LogLevel["INFO"]] = "^2[INFO]",
